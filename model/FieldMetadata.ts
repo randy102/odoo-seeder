@@ -7,13 +7,15 @@ export class FieldMetadata {
   defaultValue: FieldDefault
   key: string
   fieldName: string
+  autoInit: boolean
 
   constructor(conf: FieldConfig, fieldName: string) {
-    const { def, cls, key } = conf || {}
+    const { def, cls, key, auto } = conf || {}
     this.FieldClass = cls
     this.defaultValue = def
     this.key = key
     this.fieldName = fieldName
+    this.autoInit = auto
   }
 
   isNormal(): boolean {

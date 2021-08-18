@@ -9,12 +9,12 @@ export class SeedOption {
   constructor(option?: any) {
     Object.assign(this, option)
     if (this.fieldMetadata) {
-      this.initMRecord()
-      this.initORecord()
+      this.initOne2ManyRecord()
+      this.initMany2OneRecord()
     }
   }
 
-  private initMRecord() {
+  private initOne2ManyRecord() {
     for (const field of this.fieldMetadata) {
       if (field.isO2M(this)) {
         const { FieldClass, fieldName } = field
@@ -23,7 +23,7 @@ export class SeedOption {
     }
   }
 
-  private initORecord() {
+  private initMany2OneRecord() {
     for (const field of this.fieldMetadata) {
       const { FieldClass, defaultValue: rawDefaultVal, fieldName } = field
       const defaultValue = this.getDefaultValue(rawDefaultVal)
@@ -32,14 +32,16 @@ export class SeedOption {
         this[fieldName] = defaultValue
       }
 
-      if (field.isM2O()) {
+      else if (field.isM2O()) {
         if (!this[fieldName]) {
           this[fieldName] = new FieldClass(defaultValue)
         } else if (Number.isInteger(this[fieldName])) {
           this[fieldName] = new FieldClass(this[fieldName])
         }
-      } else if (field.isO2M(this)) {
-        this[fieldName].forEach(f => (f as SeedOption).initORecord())
+      }
+
+      else if (field.isO2M(this)) {
+        this[fieldName].forEach(f => (f as SeedOption).initMany2OneRecord())
       }
     }
   }
@@ -47,10 +49,13 @@ export class SeedOption {
   async generateORecord() {
     if (!this.fieldMetadata) return
     for (const field of this.fieldMetadata) {
-      const { fieldName } = field
-      if (field.isM2O()) {
+      const { fieldName, autoInit } = field
+
+      if (field.isM2O() && autoInit) {
         await (this[fieldName] as SeedModel<any>).generate()
-      } else if (field.isO2M(this)) {
+      }
+
+      else if (field.isO2M(this)) {
         for (const opt of this[fieldName]) {
           await (opt as SeedOption).generateORecord()
         }

@@ -11,7 +11,6 @@
   "license": "MIT",
   "dependencies": {
     "cypress": "^8.2.0",
-    "dotenv": "^10.0.0",
     "moment": "^2.29.1",
     "odoo-xmlrpc": "^1.0.8"
   },

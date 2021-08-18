@@ -5,7 +5,8 @@ export type FieldDefault = number | string | ((option) => number | string)
 export type FieldConfig = {
   key: string
   cls?: any,
-  def?: FieldDefault
+  def?: FieldDefault,
+  auto?: boolean
 }
 
 export function Field(config?: FieldConfig) {
