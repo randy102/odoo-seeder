@@ -18,7 +18,7 @@ export abstract class SeedModel<Option extends SeedOption> implements IModel {
   protected option: Option
 
 
-  protected constructor(options?: Partial<Option> | number) {
+   constructor(options?: Partial<Option> | number) {
     this.setupModel()
     this.setupOption(options)
   }
@@ -115,7 +115,7 @@ export abstract class SeedModel<Option extends SeedOption> implements IModel {
     return this.rpc.archive(this.getModelName(), this.getId())
   }
 
-  getOption(): Option{
+  async getOption(): Promise<Option>{
     return clone(this.option)
   }
 

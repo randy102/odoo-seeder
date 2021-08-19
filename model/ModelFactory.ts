@@ -1,20 +1,22 @@
 import { IModel } from '../index';
 
 export abstract class ModelFactory<Option> {
-  protected mockList: IModel[] = []
+  protected modelList: { [key: string]: IModel } = {}
 
-  constructor(options: Partial<Option>[]) {
-    const Mock = this.getMockClass()
-    for (const config of options) {
-      this.mockList.push(new Mock(config))
+  constructor(options: { [key: string]: Partial<Option> }) {
+    const ModelClass = this.getModelClass()
+    const modelList = {}
+    for (const [key, option] of Object.entries(options)) {
+      modelList[key] = new ModelClass(option)
     }
+    this.modelList = modelList
   }
 
-  abstract getMockClass()
+  abstract getModelClass()
 
   async generate(): Promise<number[]> {
     let createdIds = []
-    for(const mock of this.mockList){
+    for(const mock of Object.values(this.modelList)){
       const created = await mock.generate()
       createdIds.push(created)
     }
@@ -22,24 +24,20 @@ export abstract class ModelFactory<Option> {
   }
 
   cleanup(): Promise<void[]> {
-    return Promise.all(this.mockList?.map(mock => mock.cleanup(false)))
+    return Promise.all(Object.values(this.modelList)?.map(mock => mock.cleanup(false)))
   }
 
   length(): number {
-    return this.mockList.length
+    return Object.keys(this.modelList).length
   }
 
-  getMock(i: number): IModel {
-    if (i >= this.length())
-      return null
-    return this.mockList[i]
+  getModel(key: string): IModel {
+    if (key in this.modelList)
+      return this.modelList[key]
+    return null
   }
 
-  getMockById(id: number): IModel {
-    return this.mockList.find(mock => mock.getId() == id)
-  }
-
-  getById(id: number, fields: string[]): Promise<object> {
-    return this.getMockById(id)?.get(fields)
+  getModelById(id: number): IModel {
+    return Object.values(this.modelList).find(mock => mock.getId() == id)
   }
 }
