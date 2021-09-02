@@ -17,15 +17,15 @@ export class SeedOption {
   private initOne2ManyRecord() {
     for (const field of this.fieldMetadata) {
       if (field.isO2M(this)) {
-        const { FieldClass, fieldName } = field
-        this[fieldName] = this[fieldName].map(f => new FieldClass(f))
+        const { FieldClass: OptionClass, fieldName } = field
+        this[fieldName] = this[fieldName].map(f => new OptionClass(f))
       }
     }
   }
 
   private initMany2OneRecord() {
     for (const field of this.fieldMetadata) {
-      const { FieldClass, defaultValue: rawDefaultVal, fieldName } = field
+      const { FieldClass: ModelClass, defaultValue: rawDefaultVal, fieldName, autoInit } = field
       const defaultValue = this.getDefaultValue(rawDefaultVal)
 
       if (field.isNormal() && !this[fieldName] && defaultValue) {
@@ -33,10 +33,10 @@ export class SeedOption {
       }
 
       else if (field.isM2O()) {
-        if (!this[fieldName]) {
-          this[fieldName] = new FieldClass(defaultValue)
-        } else if (Number.isInteger(this[fieldName])) {
-          this[fieldName] = new FieldClass(this[fieldName])
+        if (!this[fieldName] && autoInit) {
+          this[fieldName] = new ModelClass(defaultValue)
+        } else {
+          this[fieldName] = new ModelClass(this[fieldName])
         }
       }
 
@@ -49,9 +49,9 @@ export class SeedOption {
   async generateORecord() {
     if (!this.fieldMetadata) return
     for (const field of this.fieldMetadata) {
-      const { fieldName, autoInit } = field
+      const { fieldName } = field
 
-      if (field.isM2O() && autoInit) {
+      if (field.isM2O() && this[fieldName]) {
         await (this[fieldName] as SeedModel<any>).generate()
       }
 
@@ -84,9 +84,11 @@ export class SeedOption {
 
       if (field.isNormal()) {
         data[key] = this[fieldName]
-      } else if (field.isO2M(this)) {
+      }
+      else if (field.isO2M(this)) {
         data[key] = SeedOption.formatO2MData(this[fieldName].map(f => f.getSeedData()))
-      } else {
+      }
+      else if (field.isM2O() && this[fieldName]){
         data[key] = (this[fieldName] as SeedModel<any>).getId()
       }
     }

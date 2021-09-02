@@ -1,6 +1,7 @@
 import { SeedOption } from './SeedOption';
 import { clone, OdooRPC } from '../helper';
 import { IModel } from './IModel';
+import { CleanOption } from '../type/private';
 
 export type ModelConfig = {
   modelName: string
@@ -18,7 +19,7 @@ export abstract class SeedModel<Option extends SeedOption> implements IModel {
   protected option: Option
 
 
-   constructor(options?: Partial<Option> | number) {
+   constructor(options?: Partial<CleanOption<Option>> | number) {
     this.setupModel()
     this.setupOption(options)
   }
