@@ -23,10 +23,6 @@ export abstract class ModelFactory<Option> {
     return createdIds
   }
 
-  cleanup(): Promise<void[]> {
-    return Promise.all(Object.values(this.modelList)?.map(mock => mock.cleanup(false)))
-  }
-
   length(): number {
     return Object.keys(this.modelList).length
   }

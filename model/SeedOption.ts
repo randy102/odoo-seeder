@@ -63,20 +63,6 @@ export class SeedOption {
     }
   }
 
-  async cleanupORecord() {
-    if (!this.fieldMetadata) return
-    for (const field of this.fieldMetadata) {
-      const { fieldName } = field
-      if (field.isM2O()) {
-        await (this[fieldName] as SeedModel<any>).cleanup()
-      } else if (field.isO2M(this)) {
-        for (const opt of this[fieldName]) {
-          await (opt as SeedOption).cleanupORecord()
-        }
-      }
-    }
-  }
-
   getSeedData() {
     const data = {}
     for (const field of this.fieldMetadata) {

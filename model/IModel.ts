@@ -1,8 +1,6 @@
 export interface IModel {
   generate(): Promise<number>
 
-  cleanup(cleanupDependencies: boolean): Promise<void>
-
   getId(): number
 
   setId(id: number)

@@ -6,7 +6,6 @@ import { CleanOption } from '../type/private';
 export type ModelConfig = {
   modelName: string
   optionClass: any
-  canDelete?: boolean
 }
 
 
@@ -14,7 +13,6 @@ export abstract class SeedModel<Option extends SeedOption> implements IModel {
   protected readonly rpc: OdooRPC = OdooRPC.getInstance()
   protected MODEL: string
   protected ID: number
-  protected CAN_DELETE: boolean
   protected OptionClass: any
   protected option: Option
 
@@ -33,10 +31,9 @@ export abstract class SeedModel<Option extends SeedOption> implements IModel {
   }
 
   private setupModel() {
-    const { modelName, optionClass, canDelete } = this.getModelConfig()
+    const { modelName, optionClass } = this.getModelConfig()
     this.MODEL = modelName
     this.OptionClass = optionClass
-    this.CAN_DELETE = canDelete !== undefined ? canDelete : true
   }
 
   protected abstract getModelConfig(): ModelConfig
@@ -63,31 +60,8 @@ export abstract class SeedModel<Option extends SeedOption> implements IModel {
     }
   }
 
-  protected async beforeCleanup(option: Option): Promise<void> {
-  }
-
-  protected async afterCleanup(option: Option): Promise<void> {
-  }
-
   protected async shouldCleanup(option: Option): Promise<boolean> {
     return true
-  }
-
-  /**
-   * Clean up method
-   * @param cleanupDependencies decide whether to cleanup its dependency after cleanup mock
-   */
-  async cleanup(cleanupDependencies = true) {
-    if (!this.getId() || !(await this.shouldCleanup(clone(this.option)))) return
-    await this.beforeCleanup(clone(this.option))
-    if (this.CAN_DELETE)
-      await this.unlink()
-    else
-      await this.archive()
-    await this.afterCleanup(clone(this.option))
-    if (cleanupDependencies) {
-      await this.option.cleanupORecord()
-    }
   }
 
   async get(fields: string[]): Promise<any> {

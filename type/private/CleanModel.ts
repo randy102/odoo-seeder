@@ -1,7 +1,6 @@
 type SeedModelExclude =
   'generate'
   | 'getId'
-  | 'cleanup'
   | 'get'
   | 'call'
   | 'write'
