@@ -1,6 +1,6 @@
 {
   "name": "odoo-seeder",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,7 +10,7 @@
   "author": "Randy Tran",
   "license": "MIT",
   "dependencies": {
-    "cypress": "^8.2.0",
+    "cypress": "^8.3.1",
     "moment": "^2.29.1",
     "odoo-xmlrpc": "^1.0.8"
   },

@@ -35,7 +35,7 @@ export class SeedOption {
       else if (field.isM2O()) {
         if (!this[fieldName] && autoInit) {
           this[fieldName] = new ModelClass(defaultValue)
-        } else {
+        } else if (Number.isInteger(this[fieldName]) || !(this[fieldName] instanceof ModelClass)) {
           this[fieldName] = new ModelClass(this[fieldName])
         }
       }
